@@ -1,0 +1,5 @@
+{
+  "tool_name": "Bash",
+  "tool_input": { "command": "python -m pytest" },
+  "tool_response": "============================= test session starts ==============================\nplatform darwin -- Python 3.12.0, pytest-8.0.0\ncollected 42 items\n\ntests/test_a.py ..........                                              [ 23%]\ntests/test_b.py ....................                                     [ 71%]\ntests/test_c.py ............                                            [100%]\n\n============================== 42 passed in 1.23s ==============================\n"
+}

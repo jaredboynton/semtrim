@@ -1,0 +1,18 @@
+{
+  "name": "semtrim",
+  "owner": {
+    "name": "Jared Boynton"
+  },
+  "metadata": {
+    "description": "Command-aware semantic compression of agent tool output, applied as a PostToolUse hook.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "semtrim",
+      "category": "productivity",
+      "description": "Replaces blind head+tail truncation with Boost-style, command-aware compression of tool output before it enters context. Per-command filters (gh, docker, npm-family, go, cargo, bundlers, pytest/jest/vitest, git, linters) plus a generic ANSI+dedup+salience fallback. Deterministic and cache-safe; never blocks.",
+      "source": "./"
+    }
+  ]
+}

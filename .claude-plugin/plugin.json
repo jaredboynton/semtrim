@@ -1,0 +1,9 @@
+{
+  "name": "semtrim",
+  "version": "0.1.0",
+  "description": "Command-aware semantic compression of tool output before it enters context. Replaces blind truncation with per-command filters (gh, docker, npm, test runners, git, ...) plus a generic salience fallback. Cache-safe.",
+  "author": {
+    "name": "Jared Boynton"
+  },
+  "hooks": "./hooks/hooks.json"
+}

@@ -1,0 +1,5 @@
+{
+  "tool_name": "Bash",
+  "tool_input": { "command": "python -m pytest" },
+  "tool_response": "============================= test session starts ==============================\ncollected 3 items\n\ntests/test_a.py .                                                       [ 33%]\ntests/test_b.py F                                                       [ 66%]\ntests/test_c.py .                                                       [100%]\n\n=================================== FAILURES ===================================\n_________________________________ test_thing __________________________________\n\n    def test_thing():\n>       assert add(2, 2) == 5\nE       assert 4 == 5\n\ntests/test_b.py:12: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_b.py::test_thing - assert 4 == 5\n========================= 1 failed, 2 passed in 0.45s ==========================\n"
+}

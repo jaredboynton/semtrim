@@ -1,0 +1,5 @@
+{
+  "tool_name": "Bash",
+  "tool_input": { "command": "gh pr list" },
+  "tool_response": "\nShowing 12 of 24 open pull requests in acme/app\n\n#83  feat: load traces to db        db-load-ci    OPEN\n#82  fix: handle null pointer       fix-null-ptr  OPEN\n#81  chore: bump deps               deps-2024     OPEN\n#80  docs: update readme            docs-update   OPEN\n"
+}

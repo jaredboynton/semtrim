@@ -1,0 +1,5 @@
+{
+  "tool_name": "Bash",
+  "tool_input": { "command": "go test ./..." },
+  "tool_response": "?   github.com/acme/app   [no test files]\nok  github.com/acme/app/cmd   0.123s\n=== RUN TestHandler\n--- PASS: TestHandler (0.01s)\n=== RUN TestMiddleware\n--- PASS: TestMiddleware (0.02s)\nPASS\nok  github.com/acme/app/internal/app   0.456s\nok  github.com/acme/app/internal/store   0.222s\n"
+}

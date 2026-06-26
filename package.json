@@ -1,0 +1,14 @@
+{
+  "name": "semtrim",
+  "version": "0.1.0",
+  "description": "Command-aware semantic compression of agent tool output, applied as a PostToolUse hook.",
+  "type": "module",
+  "bin": {
+    "semtrim": "hooks/semtrim.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "license": "MIT",
+  "author": "Jared Boynton"
+}

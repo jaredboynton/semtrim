@@ -1,0 +1,19 @@
+{
+  "thresholdBytes": 20480,
+  "headBytes": 8192,
+  "tailBytes": 4096,
+  "salienceBudgetBytes": 12288,
+  "compressors": {
+    "gh": true,
+    "docker": true,
+    "npm": true,
+    "go": true,
+    "cargo": true,
+    "bundler": true,
+    "pytest": true,
+    "jest": true,
+    "git": true,
+    "lint": true
+  },
+  "genericOnly": false
+}
