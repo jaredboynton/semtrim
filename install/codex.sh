@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
-# Wire semtrim into Codex as a PostToolUse hook.
+# cleanup-traps: not-applicable -- prints help text via a cat heredoc; spawns no subprocess.
+# Wire semtrim into Codex.
 #
-# Codex reads hooks from a plugin's .codex-plugin/hooks.json or from the Codex
-# settings hooks block, depending on your setup. This script prints the entry to
-# add; it does not edit Codex config in place (Codex config layouts vary).
+# Codex does NOT support PostToolUse output replacement, so semtrim compresses
+# via the PreToolUse command-wrap path only: it rewrites known shell commands to
+# pipe their output through the semtrim filter before the model sees it.
+#
+# Codex reads hooks from ~/.codex/hooks.json (or a repo .codex/hooks.json, or a
+# plugin's hooks/hooks.json). This script prints the entry to add; it does not
+# edit Codex config in place (Codex config layouts vary).
 
 set -euo pipefail
 PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 HOOK_CMD="node \"${PLUGIN_ROOT}/hooks/semtrim.mjs\""
 
 cat <<EOF
-Add this PostToolUse hook to your Codex hooks config
-(e.g. a .codex-plugin/hooks.json or your Codex settings):
+Add this PreToolUse hook to your Codex hooks config
+(e.g. ~/.codex/hooks.json):
 
-  "PostToolUse": [
+  "PreToolUse": [
     {
       "matcher": "Bash|Shell|exec_command",
       "hooks": [
@@ -22,5 +27,11 @@ Add this PostToolUse hook to your Codex hooks config
     }
   ]
 
-semtrim auto-detects Codex's bare-string shell tool_response shape.
+Notes:
+  - semtrim rewrites recognized commands (npm, pytest, docker build, ...) to
+    pipe through its filter; unrecognized/compound commands pass through.
+  - Codex's PreToolUse currently intercepts simple shell calls only; richer
+    unified_exec interception is incomplete upstream.
+  - PostToolUse output replacement is unsupported on Codex, so there is no
+    PostToolUse entry.
 EOF

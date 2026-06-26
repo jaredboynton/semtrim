@@ -18,10 +18,22 @@ export function match() {
   return false;
 }
 
+export function matchPre() {
+  return false;
+}
+
 export function extract() {
+  return null;
+}
+
+export function extractPre() {
   return null;
 }
 
 export function emit(_job, newText) {
   return { hookSpecificOutput: { updatedToolOutput: newText } };
+}
+
+export function emitPre() {
+  return null;
 }

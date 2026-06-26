@@ -8,12 +8,20 @@ import * as cursor from "./adapters/cursor.mjs";
 import { routeBash } from "./router.mjs";
 import { compressFileContent } from "./compressors/_file.mjs";
 import { redact } from "./util/redact.mjs";
+import { wrapCommand } from "./wrap.mjs";
 
 const ADAPTERS = [claude, codex, cursor];
 
 export function selectAdapter(payload) {
   for (const a of ADAPTERS) {
     if (a.match(payload)) return a;
+  }
+  return null;
+}
+
+export function selectPreAdapter(payload) {
+  for (const a of ADAPTERS) {
+    if (a.matchPre && a.matchPre(payload)) return a;
   }
   return null;
 }
@@ -43,6 +51,7 @@ export function compress(job, cfg) {
 export function run(payload, cfg) {
   let adapter;
   try {
+    if (cfg.post?.enabled === false) return null;
     adapter = selectAdapter(payload);
     if (!adapter) return null;
     const job = adapter.extract(payload);
@@ -52,6 +61,24 @@ export function run(payload, cfg) {
     // Never-grow safety: only rewrite if we actually saved bytes.
     if (typeof newText !== "string" || newText.length >= job.text.length) return null;
     return adapter.emit(job, newText);
+  } catch {
+    return null;
+  }
+}
+
+// PreToolUse: rewrite a Bash command to pipe its output through the semtrim
+// filter. Returns an output object or null (leave the command unchanged).
+// Never throws.
+export function runPre(payload, cfg) {
+  try {
+    if (cfg.wrap?.enabled === false) return null;
+    const adapter = selectPreAdapter(payload);
+    if (!adapter || !adapter.emitPre) return null;
+    const command = adapter.extractPre(payload);
+    if (typeof command !== "string" || !command) return null;
+    const wrapped = wrapCommand(command, cfg);
+    if (!wrapped || wrapped === command) return null;
+    return adapter.emitPre(payload, wrapped);
   } catch {
     return null;
   }

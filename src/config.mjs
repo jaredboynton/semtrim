@@ -25,6 +25,8 @@ export function loadConfig() {
   return {
     ...defaults,
     ...override,
-    compressors: { ...(defaults.compressors || {}), ...(override.compressors || {}) },
+    filters: { ...(defaults.filters || {}), ...(override.filters || {}) },
+    wrap: { ...(defaults.wrap || {}), ...(override.wrap || {}) },
+    post: { ...(defaults.post || {}), ...(override.post || {}) },
   };
 }
