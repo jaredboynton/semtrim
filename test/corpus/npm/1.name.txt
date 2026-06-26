@@ -1,0 +1,1 @@
+install drops deprecation warnings, keeps result

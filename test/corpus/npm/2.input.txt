@@ -1,0 +1,4 @@
+> myapp@1.0.0 build
+> tsc
+src/index.ts(3,1): error TS1005: ';' expected.
+npm error code 2

@@ -1,0 +1,4 @@
+Running via Spring preloader in process 12345
+......
+Finished in 0.01 seconds (files took 1.2 seconds to load)
+6 examples, 0 failures

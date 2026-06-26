@@ -1,0 +1,3 @@
+To https://github.com/jfrog-fastci/boost-cli.git
+ * [new branch]      HEAD -> cursor/span-collection-slimdown
+branch 'cursor/span-collection-slimdown' set up to track 'origin/cursor/span-collection-slimdown'.

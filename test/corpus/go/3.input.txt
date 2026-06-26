@@ -1,0 +1,6 @@
+=== RUN   TestOne
+--- PASS: TestOne (0.00s)
+PASS
+ok  
+example.com/pkg
+0.123s

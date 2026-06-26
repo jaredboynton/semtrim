@@ -1,0 +1,3 @@
+warning: unused variable: `x`
+ --> src/main.rs:10:5
+    Finished dev [unoptimized + debuginfo] target(s) in 2.34s

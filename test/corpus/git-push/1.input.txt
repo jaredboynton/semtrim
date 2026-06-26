@@ -1,0 +1,10 @@
+remote: 
+remote: Create a pull request for 'cursor/span-collection-slimdown' on GitHub by visiting:        
+remote:      https://github.com/jfrog-fastci/boost-cli/pull/new/cursor/span-collection-slimdown        
+remote: 
+remote: GitHub found 19 vulnerabilities on jfrog-fastci/boost-cli's default branch (7 high, 8 moderate, 4 low). To find out more, visit:        
+remote:      https://github.com/jfrog-fastci/boost-cli/security/dependabot        
+remote: 
+To https://github.com/jfrog-fastci/boost-cli.git
+ * [new branch]      HEAD -> cursor/span-collection-slimdown
+branch 'cursor/span-collection-slimdown' set up to track 'origin/cursor/span-collection-slimdown'.

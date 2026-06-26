@@ -1,0 +1,1 @@
+keeps failures and summary, drops banners and dots

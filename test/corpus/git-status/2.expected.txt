@@ -1,0 +1,4 @@
+R old.go -> new.go
+U conflict.go
+M foo.go
+? bar.go

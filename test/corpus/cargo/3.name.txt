@@ -1,0 +1,1 @@
+cargo test drops passing tests keeps failures and summary

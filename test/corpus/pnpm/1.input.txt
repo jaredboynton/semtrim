@@ -1,0 +1,5 @@
+Progress: resolved 250, reused 200, downloaded 50, added 250, done
+dependencies:
++ react 18.2.0
++ react-dom 18.2.0
+Done in 5.2s

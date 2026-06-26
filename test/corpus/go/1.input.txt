@@ -1,0 +1,17 @@
+=== RUN   TestOne
+--- PASS: TestOne (0.00s)
+=== RUN   TestTwo
+    foo_test.go:12: got 1, want 2
+--- FAIL: TestTwo (0.01s)
+=== RUN   TestThree
+--- PASS: TestThree (0.00s)
+FAIL
+ok  
+example.com/pkg/ok
+0.123s
+FAIL
+example.com/pkg/bad
+0.456s
+?   
+example.com/pkg/empty
+[no test files]

@@ -1,0 +1,10 @@
+D .cursor/commands/boost-cli-architecture.md
+D .cursor/hooks.json
+N .cursor/rules/ponytail.mdc
+D .cursor/skills/auto-commit/SKILL.md
+M .github/workflows/boost-agent-matrix.yml
+M .github/workflows/integration-tests.yml
+N .github/workflows/test-upgrade.yml
+M docs/trace-spans/ci-setup-and-interception.md
+M github_action/action.yml
+? .cursor/hooks.json

@@ -1,0 +1,11 @@
+   Compiling foo v0.1.0 (/path/foo)
+    Finished test [unoptimized + debuginfo] target(s) in 1.2s
+     Running unittests src/lib.rs (target/debug/deps/foo-abc)
+running 2 tests
+test tests::ok_one ... ok
+test tests::fails_two ... FAILED
+failures:
+---- tests::fails_two stdout ----
+thread 'tests::fails_two' panicked at src/lib.rs:10:9:
+assertion `left == right` failed
+test result: FAILED. 1 passed; 1 failed; 0 ignored

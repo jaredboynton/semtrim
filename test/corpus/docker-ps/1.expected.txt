@@ -1,0 +1,2 @@
+CONTAINER ID   IMAGE          STATUS
+abc123def456   nginx:latest   Up 2 hours

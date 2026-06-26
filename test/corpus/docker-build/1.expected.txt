@@ -1,0 +1,3 @@
+#6 [3/3] RUN npm ci
+#6 ERROR: process "/bin/sh -c npm ci" did not complete successfully: exit code: 1
+ERROR: failed to solve: process "/bin/sh -c npm ci" did not complete successfully: exit code: 1

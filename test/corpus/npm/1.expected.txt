@@ -1,0 +1,2 @@
+added 210 packages, and audited 211 packages in 5s
+12 packages are looking for funding

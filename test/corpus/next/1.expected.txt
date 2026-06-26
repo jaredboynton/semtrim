@@ -1,0 +1,5 @@
+Route (app)                              Size     First Load JS
+ /                                    1.2 kB         85 kB
+ /about                               0.5 kB         84 kB
++ First Load JS shared by all            72 kB
+  (Static)  prerendered as static content

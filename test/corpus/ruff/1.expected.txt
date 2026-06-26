@@ -1,0 +1,4 @@
+src/app.py:1:8: F401 [*] `os` imported but unused
+src/app.py:10:5: E711 Comparison to `None` should be `cond is None`
+Found 2 errors.
+[*] 1 fixable with the `--fix` option.

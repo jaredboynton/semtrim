@@ -1,0 +1,6 @@
+    Updating crates.io index
+   Compiling foo v0.1.0 (/path/foo)
+   Compiling bar v0.2.0
+warning: unused variable: `x`
+ --> src/main.rs:10:5
+    Finished dev [unoptimized + debuginfo] target(s) in 2.34s

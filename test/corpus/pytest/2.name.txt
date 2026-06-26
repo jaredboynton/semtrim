@@ -1,0 +1,1 @@
+all green collapses to the summary line

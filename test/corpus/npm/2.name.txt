@@ -1,0 +1,1 @@
+run script drops the pkg header, keeps errors

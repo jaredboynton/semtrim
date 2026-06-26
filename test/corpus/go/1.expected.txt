@@ -1,0 +1,6 @@
+    foo_test.go:12: got 1, want 2
+--- FAIL: TestTwo (0.01s)
+FAIL
+FAIL
+example.com/pkg/bad
+0.456s

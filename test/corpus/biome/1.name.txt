@@ -1,0 +1,1 @@
+empty input returns on_empty message

@@ -7,7 +7,7 @@ import * as codex from "./adapters/codex.mjs";
 import * as cursor from "./adapters/cursor.mjs";
 import { routeBash } from "./router.mjs";
 import { compressFileContent } from "./compressors/_file.mjs";
-import { exitSuccess } from "./util/exit-detect.mjs";
+import { redact } from "./util/redact.mjs";
 
 const ADAPTERS = [claude, codex, cursor];
 
@@ -25,13 +25,18 @@ const MARKER = "[semtrim";
 
 // Compute the compressed text for an extracted job. Pure.
 export function compress(job, cfg) {
-  if (job.text.includes(MARKER)) return job.text;
-  if (job.tool === "Read") {
-    return compressFileContent(job.text, cfg);
+  let text = job.text;
+  if (!text.includes(MARKER)) {
+    if (job.tool === "Read") {
+      text = compressFileContent(text, cfg);
+    } else {
+      text = routeBash(job.command || "", text, { cfg });
+    }
   }
-  // Bash
-  const success = exitSuccess(job.text, job.structured);
-  return routeBash(job.command || "", job.text, { success, cfg });
+  // Secret redaction pass (default on). Applied last so it covers both
+  // compressed and marker-passthrough text. Idempotent.
+  if (cfg.redact !== false) text = redact(text);
+  return text;
 }
 
 // Returns an output object or null (pass through). Never throws.

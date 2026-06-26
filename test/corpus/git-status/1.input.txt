@@ -1,0 +1,15 @@
+On branch cursor/16bbf687
+Your branch is up to date with 'origin/cursor/16bbf687'.
+All conflicts fixed but you are still merging.
+Changes to be committed:
+        deleted:    .cursor/commands/boost-cli-architecture.md
+        deleted:    .cursor/hooks.json
+        new file:   .cursor/rules/ponytail.mdc
+        deleted:    .cursor/skills/auto-commit/SKILL.md
+        modified:   .github/workflows/boost-agent-matrix.yml
+        modified:   .github/workflows/integration-tests.yml
+        new file:   .github/workflows/test-upgrade.yml
+        modified:   docs/trace-spans/ci-setup-and-interception.md
+        modified:   github_action/action.yml
+Untracked files:
+        .cursor/hooks.json

@@ -1,0 +1,1 @@
+keeps failures and tallies, drops passing scaffolding

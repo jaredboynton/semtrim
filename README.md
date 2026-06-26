@@ -1,40 +1,50 @@
 # semtrim
 
 Command-aware semantic compression of agent tool output, applied as a
-PostToolUse hook. Replaces blind head+tail truncation with per-command filters
-(gh, docker, npm-family, go, cargo, bundlers, pytest/jest/vitest, git, linters)
-plus a generic ANSI+dedup+salience fallback. Deterministic and cache-safe; it
-never blocks and never grows output.
+PostToolUse hook. Replaces blind head+tail truncation with a **data-driven
+filter engine**: one declarative rule set per command family (npm, pnpm, pip,
+docker, go, cargo, tsc, next, vitest, jest, pytest, git status/push, eslint,
+ruff, mypy, golangci-lint, gcc, prettier, black, rubocop, rspec, biome, turbo,
+nx) plus a generic ANSI+dedup+salience fallback, and a secret-redaction pass.
+Deterministic and cache-safe; it never blocks and never grows output.
 
-Inspired by [JFrog Boost](https://boost.jfrog.com/)'s command-aware filtering,
-reimplemented clean-room as a hook.
+The filter rules and a golden test corpus were derived by analyzing
+[JFrog Boost](https://boost.jfrog.com/)'s behavior and its embedded test
+fixtures (Boost's filter logic ships in a compiled Go binary; this is a
+clean-room reimplementation in Node). See `docs/boost-derived-rules.md`.
 
 ## What it does
 
 On each Read/Bash tool result, before the output enters the model's context:
 
-- **Bash**: detects the program and routes to a compressor that rebuilds the
-  output structurally - keeps the signal (package counts, vuln summary, build
-  step/cache summary, test pass/fail counts, failing test blocks, lint
-  problems), drops the noise (deprecation spam, progress bars, ANSI, per-module
-  chatter, PASS run lines). Unknown commands get a generic ANSI-strip +
+- **Bash**: detects the program and routes to a declarative filter. Each filter
+  has an *activation gate* (only transform output that looks like that command),
+  a *strip list* of known-noise line patterns to drop, optional *replace* rules
+  and an *on_empty* fallback message. Signal (errors, tracebacks, test
+  pass/fail tallies, lint diagnostics, ref updates) is preserved; noise
+  (progress bars, ANSI, per-module/per-test scaffolding, digests, vuln/PR
+  chatter) is dropped. Unknown commands get a generic ANSI-strip +
   consecutive-line dedup + salience pass, with truncation only when over budget.
 - **Read**: line-aware head+tail windowing of large file content (keeps
   structure), instead of raw byte slicing.
+- **Redaction**: a final pass scrubs secrets (`*_TOKEN`/`*_SECRET`/`AWS_*`/
+  `DATABASE_URL`/bearer tokens/`AKIA…`/`ghp_…`/URL credentials) from any output
+  before it reaches the model.
 
 ### Example
 
 ```
-# Before (~9,800 chars of install noise)
-npm warn deprecated inflight@1.0.6 ...
-npm notice New major version ...
-added 1285 packages, and audited 1286 packages in 45s
-211 packages are looking for funding
-found 0 vulnerabilities
+# Before (git push noise)
+Enumerating objects: 12, done.
+Writing objects: 100% (7/7), 1.2 KiB | 1.2 MiB/s, done.
+remote: Create a pull request for 'main' on GitHub by visiting:
+remote:   https://github.com/acme/app/pull/new/main
+To github.com:acme/app.git
+   abc1234..def5678  main -> main
 
 # After
-added 1285 packages, and audited 1286 packages in 45s
-found 0 vulnerabilities
+To github.com:acme/app.git
+   abc1234..def5678  main -> main
 ```
 
 ## Scope boundary
@@ -53,9 +63,10 @@ speed win.
 - **Cache-safe**: deterministic, idempotent (`f(f(x)) == f(x)`), injects no
   timestamps or volatile tokens. The rewritten output is what gets cached going
   forward, so it does not bust the prompt cache.
-- **Failure-preserving**: on detected failure (non-zero exit / strong error
-  markers), compressors keep the failing test, compiler error, or stack frame
-  verbatim rather than summarizing it away.
+- **Failure-preserving**: filters only ever drop known-noise lines, never error
+  markers, so failing tests, compiler errors, tracebacks, and lint diagnostics
+  survive verbatim. If a filter's activation gate does not recognize the output,
+  it is passed through unchanged rather than risk mangling it.
 
 ## Install
 
@@ -93,46 +104,56 @@ Defaults live in `config/defaults.json`. Override per-user at
 {
   "thresholdBytes": 20480,
   "salienceBudgetBytes": 12288,
-  "compressors": { "docker": false },
+  "filters": { "docker-build": false },
+  "redact": true,
   "genericOnly": false
 }
 ```
 
 - `thresholdBytes` - size above which truncation/salience kicks in.
-- `headBytes` / `tailBytes` - window sizes for truncation.
+- `headBytes` / `tailBytes` - window sizes for Read truncation.
 - `salienceBudgetBytes` - budget for the generic salience filter.
-- `compressors.<name>` - set `false` to fall back to generic for that family.
-- `genericOnly` - skip all per-command compressors.
+- `filters.<key>` - set `false` to fall back to generic for that family
+  (keys match `src/filters.mjs`, e.g. `npm`, `docker-build`, `git-status`).
+- `redact` - set `false` to disable the secret-redaction pass.
+- `genericOnly` - skip all per-command filters.
 
 ## Architecture
 
 ```
 stdin JSON -> adapter (claude|codex|cursor) -> extract job
            -> Read:  file windower
-           -> Bash:  router (detect program) -> registry compressor
-                                              -> generic fallback
-           -> never-grow check -> adapter emit -> stdout
+           -> Bash:  router (detect program) -> registry -> filter key
+                       -> filter-engine.applyFilter(FILTERS[key])
+                       -> generic fallback (gate miss / unknown command)
+           -> redaction pass -> never-grow check -> adapter emit -> stdout
 ```
 
 - `hooks/semtrim.mjs` - entrypoint (stdin/stdout, never throws).
-- `src/engine.mjs` - adapter selection, dispatch, never-grow safety.
+- `src/engine.mjs` - adapter selection, dispatch, redaction, never-grow safety.
 - `src/router.mjs` - shell program detection (env prefixes, `python -m`,
   `npx`/`poetry run` wrappers, operator splitting).
-- `src/registry.mjs` - program -> compressor map.
-- `src/compressors/*` - per-command filters + `_generic` + `_file`.
+- `src/registry.mjs` - program (+subcommand) -> filter key map.
+- `src/filters.mjs` - declarative filter table (one entry per family).
+- `src/filter-engine.mjs` - generic interpreter (gate -> replace -> keep ->
+  strip -> caps -> on_empty).
+- `src/compressors/{_generic,_file}.mjs` - generic fallback + Read windower.
 - `src/adapters/*` - host payload schemas.
-- `src/util/*` - ansi, salience, budget, exit-detect.
+- `src/util/*` - ansi, salience, budget, redact.
 
 ## Development
 
 ```bash
-node --test "test/**/*.test.mjs"
+npm test   # node --test "test/**/*.test.mjs"
 ```
 
-Tests cover: per-command compression behavior, failure preservation, program
-detection, and the invariants (never-grow, idempotency, determinism, no volatile
-markers) across all fixtures.
+Tests cover: the declarative filters against a **golden corpus** of fixtures
+derived from Boost (`test/corpus/`), per-command behavior on hand-written
+fixtures, program detection, and the invariants (never-grow, idempotency,
+determinism, no volatile markers).
 
-`reference/boost/` is a clone of JFrog Boost kept for behavioral reference only
-(gitignored; Boost's filter source is not public - it ships as a compiled
-binary, so semtrim is a clean-room reimplementation).
+`reference/` (gitignored) holds the Boost binary and the mined filter/fixture
+extracts used to derive the rules; it is reference-only provenance. Boost's
+filter logic is not published as source (compiled Go binary), so semtrim's
+filters are a clean-room reimplementation validated against the recovered
+input/expected fixtures.

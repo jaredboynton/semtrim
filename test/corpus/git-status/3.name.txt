@@ -1,0 +1,1 @@
+clean tree keeps a non-empty summary via on_empty

@@ -1,0 +1,1 @@
+rejected non-fast-forward keeps every error and hint line

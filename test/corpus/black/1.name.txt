@@ -1,0 +1,1 @@
+clean keeps summary, drops emoji banner

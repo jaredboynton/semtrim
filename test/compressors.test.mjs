@@ -17,28 +17,30 @@ function job(name) {
   return { payload, job: adapter.extract(payload) };
 }
 
-test("npm: drops deprecation/funding noise, keeps package + vuln summary", () => {
+test("npm: drops warn/notice + script-echo noise, keeps install summary", () => {
   const { job: j } = job("npm-ci");
   const out = compress(j, cfg);
   assert.match(out, /added 1285 packages/);
   assert.match(out, /found 0 vulnerabilities/);
   assert.doesNotMatch(out, /deprecated/);
-  assert.doesNotMatch(out, /looking for funding/);
   assert.doesNotMatch(out, /npm notice/);
+  assert.doesNotMatch(out, /npm warn/);
 });
 
-test("docker: collapses to step + cache summary, keeps success line", () => {
+test("docker buildx: keeps step/error/naming lines, drops progress + digests", () => {
   const { job: j } = job("docker-build");
   const out = compress(j, cfg);
-  assert.match(out, /docker build: 12 steps, 2 cached/);
-  assert.match(out, /Successfully tagged app:latest/);
-  assert.doesNotMatch(out, /Running in a1b2c3d4/);
+  assert.match(out, /#5 \[/);
+  assert.match(out, /naming to docker\.io\/library\/app/);
+  assert.doesNotMatch(out, /transferring/);
+  assert.doesNotMatch(out, /DONE/);
+  assert.doesNotMatch(out, /sha256:/);
 });
 
-test("go: summarizes ok packages, drops PASS run lines", () => {
+test("go: all-green run collapses to ok", () => {
   const { job: j } = job("go-test");
   const out = compress(j, cfg);
-  assert.match(out, /package\(s\) ok/);
+  assert.equal(out, "ok");
   assert.doesNotMatch(out, /=== RUN/);
   assert.doesNotMatch(out, /--- PASS/);
 });
@@ -58,11 +60,10 @@ test("pytest fail: preserves the failure block verbatim", () => {
   assert.match(out, /1 failed, 2 passed/);
 });
 
-test("gh pr list: keeps rows, drops 'Showing N of M' preamble", () => {
+test("gh pr list: no dedicated filter, generic keeps rows", () => {
   const { job: j } = job("gh-pr-list");
   const out = compress(j, cfg);
   assert.match(out, /#83  feat: load traces to db/);
-  assert.doesNotMatch(out, /Showing 12 of 24/);
 });
 
 test("Read large: line-windowed with marker, smaller than input", () => {

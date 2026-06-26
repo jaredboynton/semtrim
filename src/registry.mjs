@@ -1,51 +1,59 @@
-// Map a detected program name to a compressor + config key.
+// Map a detected program (and optional subcommand) to a filter key in
+// src/filters.mjs. Returns the filter key string or null.
 
-import { compressGh } from "./compressors/gh.mjs";
-import { compressDocker } from "./compressors/docker.mjs";
-import { compressNpm } from "./compressors/npm.mjs";
-import { compressGo } from "./compressors/go.mjs";
-import { compressCargo } from "./compressors/cargo.mjs";
-import { compressBundler } from "./compressors/bundler.mjs";
-import { compressPytest } from "./compressors/pytest.mjs";
-import { compressJest } from "./compressors/jest.mjs";
-import { compressGit } from "./compressors/git.mjs";
-import { compressLint } from "./compressors/lint.mjs";
-
-// program token -> { key, fn }. `key` gates via config.compressors[key].
+// program -> filter key, or a function(argv) -> key for subcommand routing.
 const TABLE = {
-  gh: { key: "gh", fn: compressGh },
+  npm: () => "npm",
+  pnpm: (argv) => (["install", "i", "add", "list", "ls", "outdated"].includes(argv[1]) ? "pnpm" : "npm"),
+  yarn: () => "npm",
+  bun: () => "npm",
 
-  docker: { key: "docker", fn: compressDocker },
-  "docker-compose": { key: "docker", fn: compressDocker },
+  pip: () => "pip",
+  pip3: () => "pip",
 
-  npm: { key: "npm", fn: compressNpm },
-  pnpm: { key: "npm", fn: compressNpm },
-  yarn: { key: "npm", fn: compressNpm },
-  bun: { key: "npm", fn: compressNpm },
+  docker: (argv) => {
+    const sub = argv[1];
+    if (sub === "build" || sub === "buildx") return "docker-build";
+    if (sub === "ps") return "docker-ps";
+    if (sub === "images") return "docker-ps";
+    return null;
+  },
 
-  go: { key: "go", fn: compressGo },
-  cargo: { key: "cargo", fn: compressCargo },
+  go: (argv) => (["build", "vet", "test"].includes(argv[1]) ? "go" : null),
+  cargo: (argv) => (["build", "check", "clippy", "test", "install"].includes(argv[1]) ? "cargo" : null),
 
-  vite: { key: "bundler", fn: compressBundler },
-  tsc: { key: "bundler", fn: compressBundler },
-  webpack: { key: "bundler", fn: compressBundler },
-  rollup: { key: "bundler", fn: compressBundler },
-  esbuild: { key: "bundler", fn: compressBundler },
+  tsc: () => "tsc",
+  next: (argv) => (argv[1] === "build" ? "next" : null),
+  vite: () => "vitest", // vite build shares vitest-style noise; close enough
+  vitest: () => "vitest",
+  jest: () => "jest",
+  pytest: () => "pytest",
+  rspec: () => "rspec",
 
-  pytest: { key: "pytest", fn: compressPytest },
+  git: (argv) => {
+    if (argv[1] === "status") return "git-status";
+    if (argv[1] === "push") return "git-push";
+    return null;
+  },
 
-  jest: { key: "jest", fn: compressJest },
-  vitest: { key: "jest", fn: compressJest },
+  eslint: () => "eslint",
+  oxlint: () => "eslint",
+  ruff: (argv) => (["check", "format"].includes(argv[1]) ? "ruff" : null),
+  mypy: () => "mypy",
+  "golangci-lint": () => "golangci-lint",
+  gcc: () => "gcc",
+  "g++": () => "gcc",
+  prettier: () => "prettier",
+  black: () => "black",
+  rubocop: () => "rubocop",
+  biome: () => "biome",
 
-  git: { key: "git", fn: compressGit },
-
-  eslint: { key: "lint", fn: compressLint },
-  ruff: { key: "lint", fn: compressLint },
-  mypy: { key: "lint", fn: compressLint },
-  pyright: { key: "lint", fn: compressLint },
-  flake8: { key: "lint", fn: compressLint },
+  turbo: () => "turbo",
+  nx: () => "nx",
 };
 
-export function lookupCompressor(prog) {
-  return TABLE[prog] || null;
+export function lookupFilterKey(prog, argv) {
+  const entry = TABLE[prog];
+  if (!entry) return null;
+  return typeof entry === "function" ? entry(argv) : entry;
 }

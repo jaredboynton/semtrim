@@ -1,0 +1,7 @@
+Finished test [unoptimized + debuginfo] target(s) in 1.2s
+test tests::fails_two ... FAILED
+failures:
+---- tests::fails_two stdout ----
+thread 'tests::fails_two' panicked at src/lib.rs:10:9:
+assertion `left == right` failed
+test result: FAILED. 1 passed; 1 failed; 0 ignored

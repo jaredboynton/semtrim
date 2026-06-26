@@ -1,0 +1,6 @@
+   
+ Next.js 14.0.4
+   Creating an optimized production build ...
+Failed to compile.
+./src/app/page.tsx:5:1
+Type error: Cannot find name 'foo'.

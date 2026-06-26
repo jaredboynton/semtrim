@@ -1,0 +1,3 @@
+error[E0425]: cannot find value `y` in this scope
+ --> src/main.rs:3:13
+error: could not compile `foo` (bin "foo") due to 1 previous error
