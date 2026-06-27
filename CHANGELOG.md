@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-26
+
 ### Added
 
 - CI workflow (`.github/workflows/ci.yml`): node 20/22 test matrix running
@@ -25,6 +27,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - `install/claude.sh` now traps its `mktemp` temp file on `EXIT` so a failed
   `jq` rewrite cannot leak a temp file.
+
+### Fixed
+
+- Claude plugin manifest no longer points at the standard `hooks/hooks.json`
+  file, which Claude Code already auto-loads.
 
 ## [0.1.0] - 2026-06-26
 

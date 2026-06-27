@@ -1,6 +1,6 @@
 {
   "name": "semtrim",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Command-aware semantic compression of agent tool output, applied as a PreToolUse command-wrap plus best-effort PostToolUse hook.",
   "type": "module",
   "bin": { "semtrim": "hooks/semtrim.mjs" },
