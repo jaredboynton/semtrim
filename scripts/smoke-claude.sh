@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# cleanup-traps: not-applicable -- runs node hooks in-process; creates no temp files or background jobs.
 # Host-contract smoke test for Claude Code payloads.
 #
 # Feeds real PreToolUse / PostToolUse JSON payloads into the hook entrypoint and

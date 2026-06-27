@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+jobs:
+  lint:
+    name: Lint (workflows, shell, secrets)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: actionlint (GitHub workflow lint)
+        uses: docker://rhysd/actionlint:latest
+        with:
+          args: -color
+
+      - name: shellcheck (install + scripts)
+        run: shellcheck install/*.sh scripts/*.sh
+
+      - name: gitleaks (secret scan)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+
+  test:
+    name: Test (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["20", "22"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Syntax check entrypoint + sources
+        run: |
+          node --check hooks/semtrim.mjs
+          node --check scripts/bump-version.mjs
+          find src -name '*.mjs' -exec node --check {} +
+
+      - name: Version-sync gate
+        run: node scripts/bump-version.mjs --check
+
+      - name: Unit + contract + corpus tests
+        run: npm test
+
+      - name: Claude host-contract smoke
+        run: bash scripts/smoke-claude.sh
+
+      - name: Codex host-contract smoke
+        run: bash scripts/smoke-codex.sh

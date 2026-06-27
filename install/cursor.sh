@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# cleanup-traps: not-applicable -- prints help text via a cat heredoc; spawns no subprocess.
 # semtrim + Cursor: NOT SUPPORTED (informational).
 #
 # Cursor's agent hooks cannot rewrite tool output:

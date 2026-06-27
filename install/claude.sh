@@ -66,6 +66,7 @@ read -r ans
 cp "${SETTINGS}" "${SETTINGS}.semtrim.bak"
 
 tmp="$(mktemp)"
+trap 'rm -f "${tmp}"' EXIT
 jq --arg cmd "${HOOK_CMD}" '
   .hooks //= {} |
   .hooks.PreToolUse //= [] |

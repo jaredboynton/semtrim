@@ -1,0 +1,69 @@
+name: Bug report
+description: Report a reproducible semtrim failure.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong, and what were you trying to do?
+      placeholder: A wrapped command's output dropped an error line ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - PreToolUse command-wrap
+        - PostToolUse rewrite
+        - Filter rule (specific command)
+        - Redaction
+        - Install or setup
+        - Tests or corpus
+        - Documentation
+        - Unsure
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command / tool
+      description: The Bash command or tool whose output was affected.
+      placeholder: npm ci
+    validations:
+      required: false
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction steps
+      description: Include the exact command, and ideally the manual filter form to reproduce.
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Paste the smallest useful before/after output excerpt.
+    validations:
+      required: true
+  - type: input
+    id: host
+    attributes:
+      label: Host
+      description: Claude Code, Codex, or another compatible host (with version).
+      placeholder: Claude Code
+    validations:
+      required: true

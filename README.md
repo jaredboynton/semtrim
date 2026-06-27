@@ -1,5 +1,9 @@
 # semtrim
 
+[![CI](https://github.com/jaredboynton/semtrim/actions/workflows/ci.yml/badge.svg)](https://github.com/jaredboynton/semtrim/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![node >= 20](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
+
 Command-aware semantic compression of agent tool output. Replaces blind
 head+tail truncation with a **data-driven filter engine**: one declarative rule
 set per command family (npm, pnpm, pip, docker, go, cargo, tsc, next, vitest,
@@ -199,8 +203,16 @@ PostToolUse -> selectAdapter -> extract job
 ## Development
 
 ```bash
-npm test   # node --test "test/**/*.test.mjs"
+npm test       # node --test "test/**/*.test.mjs"
+just test      # same, via the task runner
+just smoke     # both host-contract smoke scripts
+just lint      # node --check sources + shellcheck shell scripts
+just precommit # run all pre-commit hooks
 ```
+
+CI (`.github/workflows/ci.yml`) runs the test suite on Node 20 and 22, both
+smoke scripts, the version-sync gate, and a lint job (actionlint, shellcheck,
+gitleaks) on every push and PR.
 
 Tests cover: the declarative filters against a **golden corpus** of fixtures
 derived from Boost (`test/corpus/`), per-command behavior, program detection,
@@ -212,3 +224,18 @@ extracts used to derive the rules; it is reference-only provenance. Boost's
 filter logic is not published as source (compiled Go binary), so semtrim's
 filters are a clean-room reimplementation validated against the recovered
 input/expected fixtures.
+
+## Releasing
+
+semtrim is distributed as a Claude Code / Codex plugin (not published to npm).
+The version string lives in `package.json` and every plugin manifest; bump them
+in one pass and tag:
+
+```bash
+just version patch      # or: just version 0.2.0  (also minor|major)
+just version-check      # verify all manifests agree (also runs in CI)
+git commit -am "semtrim 0.2.0" && git tag v0.2.0
+```
+
+`just version` refuses same-version and down-version targets and fails if any
+manifest is left out of sync.

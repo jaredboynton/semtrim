@@ -1,4 +1,6 @@
 node_modules/
 reference/
+coverage/
 *.log
+*.tmp
 .DS_Store

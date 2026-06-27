@@ -1,0 +1,40 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.10.0
+    hooks:
+      - id: shellcheck
+
+  - repo: local
+    hooks:
+      - id: node-check
+        name: node --check (syntax)
+        entry: bash -c 'node --check hooks/semtrim.mjs && node --check scripts/bump-version.mjs && find src -name "*.mjs" -exec node --check {} +'
+        language: system
+        pass_filenames: false
+        files: '\.mjs$'
+
+      - id: version-sync
+        name: version-sync (manifests agree with package.json)
+        entry: node scripts/bump-version.mjs --check
+        language: system
+        pass_filenames: false
+        files: '(package\.json|plugin\.json|marketplace\.json)$'
+
+      - id: cleanup-traps
+        name: cleanup-traps (shell scripts declare cleanup posture)
+        entry: bash scripts/check-cleanup-traps.sh
+        language: system
+        pass_filenames: false
+        files: '\.sh$'
+
+      - id: tests
+        name: node --test (unit + contract + corpus)
+        entry: npm test
+        language: system
+        pass_filenames: false
+        files: '\.(mjs|json)$'
