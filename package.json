@@ -1,11 +1,11 @@
 {
   "name": "semtrim",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Command-aware semantic compression of agent tool output, applied as a PreToolUse command-wrap plus best-effort PostToolUse hook.",
   "type": "module",
   "bin": { "semtrim": "hooks/semtrim.mjs" },
   "scripts": {
-    "test": "node --test \"test/**/*.test.mjs\"",
+    "test": "find test -name '*.test.mjs' -exec node --test {} +",
     "smoke": "bash scripts/smoke-claude.sh && bash scripts/smoke-codex.sh",
     "version-check": "node scripts/bump-version.mjs --check"
   },

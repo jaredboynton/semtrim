@@ -203,7 +203,7 @@ PostToolUse -> selectAdapter -> extract job
 ## Development
 
 ```bash
-npm test       # node --test "test/**/*.test.mjs"
+npm test       # find test -name '*.test.mjs' -exec node --test {} +
 just test      # same, via the task runner
 just smoke     # both host-contract smoke scripts
 just lint      # node --check sources + shellcheck shell scripts

@@ -58,7 +58,7 @@ It uses two layers:
 
 ## Commands
 
-- Tests: `npm test` (= `node --test "test/**/*.test.mjs"`) or `just test`
+- Tests: `npm test` (= `find test -name '*.test.mjs' -exec node --test {} +`) or `just test`
 - Claude host-contract smoke: `scripts/smoke-claude.sh`
 - Codex host-contract smoke: `scripts/smoke-codex.sh` (or `just smoke` for both)
 - Version sync gate: `node scripts/bump-version.mjs --check` (`just version-check`)
